@@ -62,7 +62,7 @@ class CR3BodySystem:
             L1 Lagrange point in dimensional coordinates.
         """
         if self.l1 is None:
-            self.adim_l1 = self._compute_collinear_point(-2 * self.mass_parameter)
+            self.adim_l1 = self._compute_collinear_point(1 - 2 * self.mass_parameter)
             self.l1 = self.adim2dim_len(self.adim_l1)
         return self.l1
 
@@ -75,7 +75,7 @@ class CR3BodySystem:
             L2 Lagrange point in dimensional coordinates.
         """
         if self.l2 is None:
-            self.adim_l2 = self._compute_collinear_point(1 - 2 * self.mass_parameter)
+            self.adim_l2 = self._compute_collinear_point(1)
             self.l2 = self.adim2dim_len(self.adim_l2)
         return self.l2
 
@@ -88,7 +88,7 @@ class CR3BodySystem:
             L3 Lagrange point in dimensional coordinates.
         """
         if self.l3 is None:
-            self.adim_l3 = self._compute_collinear_point(1)
+            self.adim_l3 = self._compute_collinear_point(-2 * self.mass_parameter)
             self.l3 = self.adim2dim_len(self.adim_l3)
         return self.l3
 
