@@ -160,7 +160,7 @@ class CR3BodySystem:
             Collinear Lagrange point in adimensional coordinates.
         """
         return np.array([newton(
-            self._dUdx, initial_guess,
+            self._dUdx, initial_guess, fprime=self._diff_dUdx,
             args=(self.mass_parameter,),
         ), 0.0, 0.0])
 
@@ -201,7 +201,6 @@ class CR3BodySystem:
 
         return x - (1 - mu) / r1**3 * (x + mu) - mu / r2**3 * (x - (1 - mu))
 
-    # [ ] Close but still not correct, fix this.
     @staticmethod
     def _diff_dUdx(x: float, mu: float) -> float:  # noqa: N802
         """Calculate the derivative of dUdx.
@@ -225,6 +224,6 @@ class CR3BodySystem:
         r2 = x - (1 - mu)
 
         return (
-            1 - (1 - mu) / r1**3 + 3 * (x + mu) * (1 - mu) / r1**4 * np.sign(r1)
-            - mu / r2**3 + 3 * (x - (1 - mu)) * mu / r2**4 * np.sign(r2)
+            1 - (1 - mu) / np.abs(r1)**3 + 3 * (x + mu) * (1 - mu) / r1**4 * np.sign(r1)
+            - mu / np.abs(r2)**3 + 3 * (x - (1 - mu)) * mu / r2**4 * np.sign(r2)
         )
