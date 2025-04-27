@@ -1,5 +1,5 @@
 """Package init."""
 
-from .lagrange_points import LagrangePoints
+from .cr3body_system import CR3BodySystem
 
-__all__ = ["LagrangePoints"]
+__all__ = ["CR3BodySystem"]
