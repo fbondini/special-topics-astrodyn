@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "advanced-3bodyproblem"
+version = "0.1.0"
+description = "Package for advanced three-body problem concepts, periodic motion around Lagrange points and effect of solar radiation pressure."
+authors = ["Francesco Bondini <bondini.francesco.vr@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "advanced-3bodyproblem" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^2.2.5"
+scipy = "^1.15.2"
+matplotlib = "^3.10.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
