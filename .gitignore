@@ -72,3 +72,8 @@ Desktop.ini
 
 # Notebook stuff
 *.ipynb_checkpoints
+
+# Project-specific files
+verify
+.dist
+_*
