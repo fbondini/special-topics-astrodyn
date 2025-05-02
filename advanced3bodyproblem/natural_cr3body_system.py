@@ -1,37 +1,29 @@
-"""Code to determine natural and artificial Lagrange points."""
+"""Natural 3 bdoy system class."""
 from __future__ import annotations
 
 from typing import Union
 
 import numpy as np
-from scipy.optimize import newton
+
+from .abc_cr3body_system import CR3BodySystem
 
 
-class CR3BodySystem:
-    """Class to determine natural and artificial Lagrange points."""
+class NaturalCR3BodySystem(CR3BodySystem):
+    """Class to define natural CR3 body system."""
 
     def __init__(self, mass1: float, mass2: float, distance: float):
-        """Initialize the LagrangePoints class.
+        """Initialize the NaturalCR3BodySystem class.
 
         Parameters
         ----------
-            mass1: float
-                Mass of the first body.
-            mass2: float
-                Mass of the second body.
-            distance: float
-                Distance between the two bodies.
+        mass1: float
+            Mass of the first primary body.
+        mass2: float
+            Mass of the second primary body.
+        distance: float
+            Distance between the two primary bodies.
         """
-        self.mass1 = mass1
-        self.mass2 = mass2
-        self.distance = distance
-
-        self.mass_parameter = mass2 / (mass1 + mass2)
-
-        self.adim_pos1 = np.array([-self.mass_parameter, 0.0, 0.0])
-        self.adim_pos2 = np.array([1.0 - self.mass_parameter, 0.0, 0.0])
-        self.pos1 = self.adim2dim_len(self.adim_pos1)
-        self.pos2 = self.adim2dim_len(self.adim_pos2)
+        super().__init__(mass1, mass2, distance)
 
         self.adim_l1 = None
         self.adim_l2 = None
@@ -119,50 +111,16 @@ class CR3BodySystem:
             self.l5 = self.adim2dim_len(self.adim_l5)
         return self.l5
 
-    def adim2dim_len(self, adim: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
-        """Convert adimensional length to dimensional length.
-
-        Parameters
-        ----------
-        adim: float | np.ndarray
-            Adimensional length
-
-        Returns
-        -------
-        float float | np.ndarray
-            Dimensional length
-
-        """
-        return adim * self.distance
-
-    def dim2adim_len(self, dim: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
-        """Convert dimensional length to adimensional length.
-
-        Parameters
-        ----------
-        adim: float | np.ndarray
-            Dimensional length
-
-        Returns
-        -------
-        float float | np.ndarray
-            aimensional length
-
-        """
-        return dim / self.distance
-
-    def _compute_collinear_point(self, initial_guess: float) -> np.array:
-        """Set the collinear Lagrange point.
+    def _compute_collinear_point(self,
+                                initial_guess: Union[float, np.ndarray]) -> np.array:
+        """Compute the collinear Lagrange point.
 
         Returns
         -------
         np.ndarray
             Collinear Lagrange point in adimensional coordinates.
         """
-        return np.array([newton(
-            self._dUdx, initial_guess, fprime=self._diff_dUdx,
-            args=(self.mass_parameter,),
-        ), 0.0, 0.0])
+        return self.compute_generic_point(initial_guess)
 
     def _compute_triangular_point(self) -> np.array:
         """Set the upper (y-positive) triangular Lagrange point.
@@ -178,7 +136,7 @@ class CR3BodySystem:
         return np.array([xloc, yloc, 0.0])
 
     @staticmethod
-    def _dUdx(x: float, mu: float) -> float:  # noqa: N802
+    def _dUdx(x: float, sys: NaturalCR3BodySystem) -> float:  # noqa: N802
         """Calculate dUdx - the derivative of the potential wrt x.
 
         Funcion to be passed to the newton solver to find the collinear points.
@@ -187,8 +145,8 @@ class CR3BodySystem:
         ----------
         x: float
             x coordinate
-        mu: float
-            mass parameter
+        sys: NaturalCR3BodySystem
+            NaturalCR3BodySystem object
 
         Returns
         -------
@@ -196,13 +154,15 @@ class CR3BodySystem:
             dUdx evaluated at x
 
         """
+        mu = sys.mass_parameter
+
         r1 = np.abs(x - (-mu))
         r2 = np.abs(x - (1 - mu))
 
         return x - (1 - mu) / r1**3 * (x + mu) - mu / r2**3 * (x - (1 - mu))
 
     @staticmethod
-    def _diff_dUdx(x: float, mu: float) -> float:  # noqa: N802
+    def _diff_dUdx(x: float, sys:  NaturalCR3BodySystem) -> float:  # noqa: N802
         """Calculate the derivative of dUdx.
 
         Funcion to be passed to the newton solver to find the collinear points.
@@ -211,8 +171,8 @@ class CR3BodySystem:
         ----------
         x: float
             x coordinate
-        mu: float
-            mass parameter
+        sys: NaturalCR3BodySystem
+            NaturalCR3BodySystem object
 
         Returns
         -------
@@ -220,6 +180,8 @@ class CR3BodySystem:
             derivative of dUdx evaluated at x
 
         """
+        mu = sys.mass_parameter
+
         r1 = x - (-mu)
         r2 = x - (1 - mu)
 
